@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <script src="js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="app.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="css/uikit.min.css" />
+        <script src="js/uikit.min.js"></script>
+        <style>
+            #loader-bg{display:none;position:fixed;width:100%;height:100%;top:0px;left:0px;background:#000;z-index:1;}#loader{display:none;position:fixed;top:50%;left:50%;width:200px;height:200px;margin-top:-100px;margin-left:-100px;text-align:center;color:#fff;z-index:2;}#pagetop{position:fixed;right:20px;bottom:0px;cursor:pointer;}
+        </style>
+        <title>曲リスト</title>
+    </head>
+    <body style="margin : 25px">
+        <!-- アニメーション -->
+        <div id="loader-bg">
+            <div id="loader">
+                <img src="gif/run_miku.gif" width="200" height="140" alt="Now Loading..." />
+                <p>Now Loading...</p>
+            </div>
+        </div>
+        <div id="wrap">
+            <!-- 曲のリクエスト用パネル -->
+            <ul uk-accordion="multiple: true">
+                <li>
+                    <a class="uk-accordion-title" href="#">リクエスト</a>
+                    <div class="uk-accordion-content">
+                        <form method="post" action="https://script.google.com/macros/s/AKfycbzht8iMQ9bVRAc-sAyz0ngb6eaDVvyaC5kcb7d0gjrE2O6cRp4/exec" class="uk-form-horizontal uk-margin-large" name="formName">
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="request_insert">お名前　
+                                    <span class="uk-label uk-label-danger">必須</span>
+                                </label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" id="request_insert" type="text" size="30" maxlength="10" placeholder="本名禁止" name="request">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="music_title_insert">曲名　　
+                                    <span class="uk-label uk-label-danger">必須</span>
+                                </label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" id="music_title_insert" type="text" maxlength="60" placeholder="曲名" name="music_title">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="artist_insert">歌手名　
+                                    <span class="uk-label uk-label-danger">必須</span>
+                                </label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" id="artist_insert" type="text" maxlength="50" placeholder="歌手名" name="artist">
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="genre_insert">ジャンル</label>
+                                <div class="uk-form-controls">
+                                    <select class="uk-select" name="genre" id="genre_insert">
+                                        <option value=""></option>
+                                        <option value="10">ボカロ</option>
+                                        <option value="20">アニソン</option>
+                                        <option value="30">ゲーム</option>
+                                        <option value="40">サンホラ</option>
+                                        <option value="50">東方</option>
+                                        <option value="60">ニコ動</option>
+                                        <option value="70">邦楽</option>
+                                        <option value="99">その他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="related_insert">関連作品名</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" id="related_insert" type="text" maxlength="40" placeholder="アニメ・ゲーム等" name="related">
+                                </div>
+                            </div>
+                            <div class="uk-text-left@s uk-text-right">
+                                <button onclick="playAnimation();" type="submit" class="uk-button uk-button-danger">送信</button>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <!-- 検索用パネル -->
+                <li class="uk-open">
+                    <a class="uk-accordion-title" href="#">検索条件</a>
+                    <div class="uk-accordion-content">
+                        <form class="uk-form-horizontal uk-margin-large">
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="genre">ジャンル</label>
+                                <div class="uk-form-controls">
+                                    <select class="uk-select" id="genre" onchange="search()">
+                                        <option value=""></option>
+                                        <option value="10">ボカロ</option>
+                                        <option value="20">アニソン</option>
+                                        <option value="30">ゲーム</option>
+                                        <option value="40">サンホラ</option>
+                                        <option value="50">東方</option>
+                                        <option value="60">ニコ動</option>
+                                        <option value="70">邦楽</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="uk-margin">
+                                <label class="uk-form-label" for="freeword">フリーワード検索</label>
+                                <div class="uk-form-controls">
+                                    <input class="uk-input" id="freeword" oninput="search()" type="text" maxlength="30" placeholder="曲名・歌手名・作品名">
+                                </div>
+                            </div>
+                            <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                                <label>
+                                    <input class="uk-checkbox" type="checkbox" name="use_flg" onchange="search()" checked>歌える曲を表示
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <!-- 一覧用パネル -->
+                <li class="uk-open">
+                    <a class="uk-accordion-title" href="#">
+                        <span>一覧(検索結果 : </span>
+                        <span id="size"></span>
+                        <span>件)</span>
+                    </a>
+                    <div class="uk-accordion-content">
+                        <table class="uk-table uk-table-striped uk-table-large uk-table-hover">
+                            <tbody id="table"></tbody>
+                        </table>
+                    </div>
+                </li>
+            </ul>
+            <!-- ネギ -->
+            <div id="pagetop">
+                <img src="gif/negi.gif">
+            </div>
+        </div>
+    </body>
+</html>
